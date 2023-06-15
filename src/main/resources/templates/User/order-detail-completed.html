@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!-- Basic -->
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!-- Mobile Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Site Metas -->
+  <title>Fresh Shop</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Site Icons -->
+  <th:block th:replace="~{User/Style/template-css:: html}"></th:block>
+
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+</head>
+
+<body>
+<!-- Start Main Top -->
+<div th:replace="~{User/fragment/header.html :: header}"></div>
+<!-- End Main Top -->
+
+
+
+<!-- Start All Title Box -->
+<div class="all-title-box">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <h2 th:text="#{table.tbOrder}"></h2>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End All Title Box -->
+
+<!-- Start Cart  -->
+<div class="cart-box-main" th:if="${listOrderDetailCompleted != null}">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="table-main table-responsive">
+          <table class="table">
+            <thead>
+            <tr>
+              <th th:text="#{table.img}"></th>
+              <th th:text="#{table.productName}"></th>
+              <th th:text="#{table.price}"></th>
+              <th th:text="#{table.quantity}"></th>
+              <th th:text="#{table.total}"></th>
+              <th th:text="#{table.date}"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="od : ${listOrderDetailCompleted}">
+
+              <td class="thumbnail-img"><img
+                      th:src="'/product_img/' + ${od.product.product_img}"
+                      style="height: 70px; width: 70px;" alt="Product Image">
+              </td>
+              <td class="name-pr" th:text="${od.product.productName}"></td>
+              <td class="price-pr" th:text="${od.product.price}"></td>
+              <td class="price-pr" th:text="${od.quantity}"></td>
+              <td th:text="${od.product.price * od.quantity}"></td>
+              <td th:text="${od.createdAt}"></td>
+
+            </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="cart-box-main text-center">
+  <div class="mb-3">
+    <a th:href="@{/shop/page/1?cateId=all&&searchName=none}" class="btn hvr-hover" th:text="#{btnContinue}"></a>
+  </div>
+</div>
+
+<!-- End Cart -->
+
+<!-- End Instagram Feed  -->
+
+
+<!-- Start Footer  -->
+<div th:replace="~{User/fragment/footer.html :: footer}"></div>
+
+<a href="#" id="back-to-top" title="Back to top" style="display: none;">&uarr;</a>
+
+<th:block th:replace="~{User/Style/template-scr:: html}"></th:block>
+
+
+
+</body>
+
+</html>

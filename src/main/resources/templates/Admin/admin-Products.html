@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+
+<title>Fresh Shop</title>
+
+<th:block th:replace="~{Admin/Admin-style/Admin-template-css:: html}"></th:block>
+<!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+	<!-- Start Main Top -->
+	<div th:replace="~{Admin/Admin-fragment/Admin-header.html:: header}"></div>
+	<!-- End Main Top -->
+
+	<!-- Start Sidebar -->
+	<div th:replace="~{Admin/Admin-fragment/Admin-sidebar.html:: aside}"></div>
+	<!-- End Sidebar -->
+
+	<main id="main" class="main">
+		<!--Start Page Title-->
+		<div class="pagetitle">
+			<h1 th:text="#{table.tbProduct}"></h1>
+		</div>
+		<!-- End Page Title -->
+
+		<!--Start Form-->
+		<section class="section">
+			<div class="row">
+				<div class="mx-auto w-75">
+					<h1 th:text="${abc}"></h1>
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title" th:text="#{table.tbProduct}"></h5>
+							<h5 style="color: red !important;" th:text=${error}></h5>
+							<h5 style="color: green !important;" th:text=${success}></h5>
+							<!-- General Form Elements -->
+							<form action="/admin" th:object="${product}" method="post"
+								enctype="multipart/form-data" id="formPro">
+								<!--Product ID-->
+								<div class="row mb-4" style="display: none">
+									<label for="product_Id" class="col-sm-2 col-form-label">Product
+										Id </label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="product_id"
+											th:field="*{productId}">
+									</div>
+									<span class="error"></span>
+								</div>
+								<!--Product Name-->
+								<div class="row mb-4">
+									<label for="product_name" class="col-sm-2 col-form-label" th:text="#{table.name}"></label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="product_name"
+											th:field="*{productName}" required> <span
+											th:if="${#fields.hasErrors('productName')}"
+											th:errors="*{productName}" style="color: red !important;"></span>
+									</div>
+									<span class="error"></span>
+								</div>
+								<!--Category ID-->
+								<input type="hidden" id="category_id">
+								<!--Categories-->
+								<div class="row mb-4">
+									<label class="col-sm-2 col-form-label" id="category_name" th:text="#{table.cateName}"></label>
+									<div class="col-sm-10">
+										<select class="form-select" name="selectedCategory"
+											id="categorySelect" aria-label="Default select example"
+											required>
+											<option selected value="0" th:text="#{table.chooseCate}"></option>
+											<option th:each="category : ${categories}"
+												th:value="${category.categoryId}"
+												th:text="${category.categoryName}"></option>
+										</select>
+									</div>
+									<span th:if="${#fields.hasErrors('productName')}"
+										th:errors="*{productName}" style="color: red !important;"></span>
+									<span class="error"></span>
+								</div>
+								<!--Description-->
+								<div class="row mb-4">
+									<label for="product_description"
+										class="col-sm-2 col-form-label" th:text="#{table.desc}"></label>
+									<div class="col-sm-10">
+										<textarea id="product_description" class="form-control"
+											style="height: 100px" th:field="*{description}" required></textarea>
+									</div>
+									<span class="error"></span>
+								</div>
+								<!--Price-->
+								<div class="row mb-4">
+									<label for="price" class="col-sm-2 col-form-label" th:text="#{table.price}"></label>
+									<div class="col-sm-10">
+										<input type="number" class="form-control" id="price"
+											th:field="*{price}" required>
+									</div>
+									<span class="error"></span>
+								</div>
+								<div class="row mb-4">
+									<label for="image" class="col-sm-2 col-form-label" th:text="#{table.img}"></label>
+									<div class="col-sm-10">
+										<input type="file" class="form-control" id="image"
+											th:field="*{product_img}" name="product_img" required>
+									</div>
+									<span class="error"></span>
+								</div>
+								<div class="row mb-4">
+									<div class="col-lg-2 col-ms-12"></div>
+									<div class="col-lg-10 col-ms-12 d-grid gap-2 d-md-block">
+										<button class="btn btn-primary" id="createButton"
+											formaction="/admin/createProduct" type="submit" th:text="#{btnCreate}"></button>
+										<button class="btn btn-success" type="submit" disabled
+											id="updateButton" formaction="/admin/updateProduct" th:text="#{btnUpdate}"></button>
+										<button class="btn btn-danger" type="submit" id="deleteButton"
+											formaction="/admin/deleteProduct" disabled th:text="#{btnDelete}"></button>
+										<button class="btn btn-warning" type="button" id="resetButton" th:text="#{btnReset}"></button>
+									</div>
+								</div>
+
+							</form>
+							<!-- End General Form Elements -->
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+			</div>
+
+			<!-- Table Product-->
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title" th:text="#{table.tbProduct}"></h5>
+							<!-- Table with stripped rows -->
+							<div class="row">
+								<form class="col-lg-8" action="/admin/product">
+									<p style="display: none" id="keywords" th:text="${keywords}"></p>
+									<div class="row w-50">
+										<div class="col-lg-9">
+											<input type="text" class="form-control" name="keywords"
+												th:placeholder="#{table.name}" th:value="${keywords}">
+										</div>
+										<input type="hidden" name="pageSize" th:value="${pageSize}" />
+										<input type="hidden" name="category" th:value="${category}" />
+										<div class="col-lg-3">
+											<button type="submit" class="btn btn-outline-primary fs-6" th:text="#{btnSearch}"></button>
+										</div>
+									</div>
+								</form>
+								<div class="col-lg-2">
+									<p style="display: none" id="show" th:text="${pageSize}"></p>
+									<div
+										class="input-group mb-3 d-grid gap-2 d-md-flex justify-content-md-end">
+										<p style="display: none" id="filter" th:text="${category}"></p>
+										<label class="input-group-text" for="inputGroupSelect01">Filter
+											<select class="form-select ms-2" id="inputGroupSelect"
+											th:onchange="redirectFilterToUrl(this.value)">
+												<option th:value="0">Tất cả</option>
+												<option th:each="categoryy : ${categories}"
+													th:value="${categoryy.categoryId}"
+													th:text="${categoryy.categoryName}"
+													th:selected="${category == categoryy.categoryId}"></option>
+										</select>
+
+										</label>
+									</div>
+								</div>
+								<div class="col-lg-2">
+									<div
+										class="input-group mb-3 d-grid gap-2 d-md-flex justify-content-md-end">
+										<label class="input-group-text" for="inputGroupSelect01">Show
+											<select class="form-select ms-2" id="inputGroupSelect01"
+											th:onchange="redirectShowToUrl(this.value)">
+												<option value="10" th:selected="${pageSize== 10}">10</option>
+												<option value="25" th:selected="${pageSize == 25}">25</option>
+												<option value="50" th:selected="${pageSize == 50}">50</option>
+												<option value="100" th:selected="${pageSize == 100}">100</option>
+										</select>
+										</label>
+									</div>
+								</div>
+							</div>
+							<table class="table">
+								<thead>
+									<tr>
+										<th scope="col" style="display: none"></th>
+										<th scope="col" th:text="#{table.name}"></th>
+										<th scope="col" th:text="#{table.img}" style="display:none"></th>
+										<th scope="col" th:text="#{table.cateName}"></th>
+										<th scope="col" th:text="#{table.desc}" style="display:none"></th>
+										<th scope="col" th:text="#{table.price}"></th>
+										<th scope="col" th:text="#{table.createdAt}"></th>
+										<th scope="col" th:text="#{table.updatedAt}"></th>
+										<th scope="col"></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="product : ${page.content}">
+										<th scope="row" th:text="${product.productId}"
+											style="display: none">1</th>
+										<td th:text="${product.productName}"></td>
+										<td th:text="${product.product_img}" style="display:none"></td>
+										<td th:text="${product.categories.categoryName}"></td>
+										<td th:text="${product.description}" style="display:none"></td>
+										<td th:text="${product.price}"></td>
+										<td th:text="${product.createdAt}"></td>
+										<td th:text="${product.updatedAt}"></td>
+										<td><a type="button" href="#"
+											class="btn btn-outline-danger me-2 editButton"
+											th:attr="data-id=${product.productId}" th:text="#{btnEdit}"></a>
+										<td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="pagination-style text-center m-5">
+								<nav aria-label="Page navigation example">
+									<ul
+										class="pagination d-flex justify-content-center align-items-center">
+
+										<li class="page-item" th:if="${page.totalPages > 0}"
+											th:classappend="${page.number == 0} ? 'disabled'"><a
+											class="page-link"
+											th:href="@{/admin/product(pageSize=${pageSize}, currentPage=${page.number - 1}, keywords=${keywords}, category=${category})}"
+											aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
+										</a></li>
+
+										<li class="page-item" th:if="${page.totalPages > 0}"
+											th:classappend="${currentPage == 0 ? 'active' : ''}"><a
+											class="page-link"
+											th:href="@{/admin/product(pageSize=${pageSize}, currentPage=0 , keywords=${keywords}, category=${category})}">1</a></li>
+
+										<li class="page-item" th:if="${page.totalPages > 2}"
+											th:each="pageNumber : ${#numbers.sequence(2, page.totalPages - 1)}"
+											th:classappend="${currentPage == pageNumber - 1 ? 'active' : ''}"><a
+											class="page-link"
+											th:href="@{/admin/product(pageSize=${pageSize}, currentPage=${pageNumber-1} , keywords=${keywords}, category=${category})}">
+												<span th:text="${pageNumber}"></span>
+										</a></li>
+
+										<li class="page-item" th:if="${page.totalPages > 1}"
+											th:classappend="${currentPage == page.totalPages - 1 ? 'active' : ''}"><a
+											class="page-link"
+											th:href="@{/admin/product(pageSize=${pageSize}, currentPage=${page.totalPages -1} , keywords=${keywords}, category=${category})}"><span
+												th:text="${page.totalPages}"></span></a></li>
+
+										<li class="page-item" th:if="${page.totalPages > 0}"
+											th:classappend="${page.number == page.totalPages - 1} ? 'disabled'"><a
+											class="page-link"
+											th:href="@{/admin/product(pageSize=${pageSize}, currentPage=${currentPage + 1} , keywords=${keywords}, category=${category})}"
+											aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+										</a></li>
+									</ul>
+								</nav>
+							</div>
+							<!-- End Table with stripped rows -->
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+
+		</section>
+	</main>
+
+	<!-- Start Footer -->
+	<!--  <div th:replace="~{Admin/Admin-fragment/Admin-footer.html:: footer}"></div>-->
+	<!-- End Footer -->
+
+	<a href="#"
+		class="back-to-top d-flex align-items-center justify-content-center"><i
+		class="bi bi-arrow-up-short"></i></a>
+
+	<th:block th:replace="~{Admin/Admin-style/Admin-template-scr:: html}"></th:block>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script>
+		function redirectShowToUrl(value) {
+			var keywords = document.getElementById("keywords").textContent;
+			var filter = document.getElementById("filter").textContent;
+			if (value === "10") {
+				window.location.href = "/admin/product?pageSize=" + value
+						+ "&keywords=" + keywords + "&category=" + filter;
+			} else if (value === "25") {
+				window.location.href = "/admin/product?pageSize=" + value
+						+ "&keywords=" + keywords + "&category=" + filter;
+			} else if (value === "50") {
+				window.location.href = "/admin/product?pageSize=" + value
+						+ "&keywords=" + keywords + "&category=" + filter;
+			} else if (value === "100") {
+				window.location.href = "/admin/product?pageSize=" + value
+						+ "&keywords=" + keywords + "&category=" + filter;
+			}
+		}
+
+		function redirectFilterToUrl(value) {
+			var keywords = document.getElementById("keywords").textContent;
+			var show = document.getElementById("show").textContent;
+
+			window.location.href = "/admin/product?pageSize=" + show
+					+ "&keywords=" + keywords + "&category=" + value;
+		}
+
+		$(document).ready(
+				function() {
+					$('.editButton').click(
+							function() {
+								$('#createButton').prop('disabled', true);
+								$('#updateButton').prop('disabled', false);
+								$('#deleteButton').prop('disabled', false);
+
+								var productId = $(this).data('id');
+								var productName = $(this).closest('tr').find(
+										'td:nth-child(2)').text();
+
+								var image = $(this).closest('tr').find(
+										'td:nth-child(3)').text();
+
+								var categoryName = $(this).closest('tr').find(
+										'td:nth-child(4)').text();
+								var description = $(this).closest('tr').find(
+										'td:nth-child(5)').text();
+								var price = $(this).closest('tr').find(
+										'td:nth-child(6)').text();
+
+								$('#product_id').val(productId);
+								$('#product_name').val(productName);
+
+								$('#categorySelect option').each(function() {
+									if ($(this).text() === categoryName) {
+										$(this).prop('selected', true);
+										return false; // Stop the loop once the option is selected
+									}
+								});
+
+								$('#product_description').val(description);
+								$('#price').val(price);
+								$('#image').val(image);
+							});
+
+					$('#resetButton').click(function() {
+						$('#formPro')[0].reset();
+						$('#createButton').prop('disabled', false);
+						$('#updateButton').prop('disabled', true);
+						$('#deleteButton').prop('disabled', true);
+					});
+				});
+	</script>
+</body>
+</html>
